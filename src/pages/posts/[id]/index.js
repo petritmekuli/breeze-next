@@ -1,9 +1,5 @@
 import AppLayout from '@/components/Layouts/AppLayout'
-import Button from '@/components/Button'
-import Link from 'next/link'
 import Head from 'next/head'
-import axios from "axios";
-import { useEffect, useState } from "react";
 
 export const getStaticPaths = async () => {
   const res = await fetch('http://127.0.0.1:8000/api/posts');
@@ -38,7 +34,7 @@ const ShowPost = ({ post }) => {
             header={
                 <div className='flex'>
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                        Posts
+                        Post Details
                     </h2>
                 </div>
             }>

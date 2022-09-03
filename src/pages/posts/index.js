@@ -4,50 +4,18 @@ import Link from 'next/link'
 import Head from 'next/head'
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { usePost } from '@/hooks/post';
 
 function PostsList() {
     const [posts, setPosts] = useState('');
+    const [user, setUser] = useState({ id: 1 });
 
-    const csrf = () => axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie')
-
-    const deletePost = async (id) => {
-        await csrf()
-
-        //To make this work I had to remove authorization and csrf token
-        axios.delete("http://127.0.0.1:8000/api/posts/"+id)
-            .then((response) => {
-                console.log(response.data)
-                fetchPosts();
-            }).catch((error) => {
-                console.error(error);
-            })
-    }
-    // const showPost = async (id) => {
-    //     // await csrf()
-
-    //     axios
-    //         .get("http://localhost:8000/api/posts/"+id)
-    //         .then((response) => {
-    //             console.log(response.data.body);
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //         });
-    // }
-
-    const fetchPosts = async () => {
-        axios
-        .get("http://127.0.0.1:8000/api/posts")
-        .then((response) => {
-            setPosts(response.data);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
+    const { destroy } = usePost();
+    const { fetchPosts } = usePost();
+    // const { fetchUser } = usePost();
 
     useEffect(() => {
-        fetchPosts();
+        fetchPosts({ setPosts })
     }, []);
 
     return (
@@ -85,12 +53,16 @@ function PostsList() {
                                                     <Link href={`/posts/${post.id}`}>
                                                         <a className="px-3 py-1 text-blue-100 no-underline bg-blue-500 rounded hover:bg-blue-600 hover:text-blue-200 ml-1">SHOW</a>
                                                     </Link>
-
-                                                    <Link href={`/posts/${post.id}/edit`}>
-                                                        <a className="px-3 py-1 text-blue-100 no-underline bg-blue-500 rounded hover:bg-blue-600 hover:text-blue-200 ml-1">Edit</a>
-                                                    </Link>
-
-                                                    <Button onClick={()=>deletePost(post.id)} className="bg-red-500 text-sm text-white-600 hover:text-gray-900 px-2 py-1 ml-3">Delete</Button>
+                                                        {post.user_id == user.id ?
+                                                        <>
+                                                        <Link href={`/posts/${post.id}/edit`}>
+                                                            <a className="px-3 py-1 text-blue-100 no-underline bg-blue-500 rounded hover:bg-blue-600 hover:text-blue-200 ml-1">Edit</a>
+                                                        </Link>
+                                                            <Button onClick={() => destroy({post, setPosts})} className="bg-red-500 text-sm text-white-600 hover:text-gray-900 px-2 py-1 ml-3">Delete</Button>
+                                                        </>
+                                                    :
+                                                        ""
+                                                    }
                                                 </div>
                                             </div>
                                         </div>

@@ -10,51 +10,30 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
 function EditPost() {
-    const { update } = usePost()
+    const router = useRouter();
+    const id = router.query.id
 
-    // const [post, setPost] = useState('');
-    // const [id, setId] = useState();
+    const { update, fetchPost } = usePost()
+
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [errors, setErrors] = useState({ 'title': '', 'body': '' });
 
-    const router = useRouter();
-    const id = router.query.id
+    useEffect(() => {
+        fetchPost({setTitle, setBody, id})
+    }, [])
 
     const submitForm = event => {
         event.preventDefault()
 
-        // updatePost()
         update({ id, title, body, setErrors })
     }
 
-    const fetchPost = async () => {
-        axios
-        .get("http://127.0.0.1:8000/api/posts/"+id)
-        .then((response) => {
-            setTitle(response.data.title);
-            setBody(response.data.body);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
-    // const updatePost = async () => {
-    //     axios
-    //     .patch("http://127.0.0.1:8000/api/posts/" + id, { 'title':title, 'body':body })
-    //     .then(() => mutate())
-    //     .catch((error) => {
-    //         console.error(error);
-    //     });
-    // }
-    useEffect(() => {
-        fetchPost()
-    }, [])
     return (
         <AppLayout
             header={
                 <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Post
+                    Edit Post
                 </h2>
             }>
 
